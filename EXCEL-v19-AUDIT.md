@@ -1,6 +1,22 @@
-# Ethan Excel v19 — Functional Upgrade Notes
+# Ethan Excel v20 — Professional Workbook Upgrade Notes
 
 Date: 2026-11-08
+
+## v20 additions
+- Multi-worksheet workbooks: add, rename, duplicate, reorder and delete worksheets; the existing single-sheet workbook data is migrated to Sheet1 on first open.
+- Range formatting controls for bold, italic, underline, currency and percent, plus clear formatting.
+- Selected-range fill, A–Z / Z–A sorting and per-column value filters.
+- Conditional formatting for greater-than, less-than and contains rules.
+- A quick chart preview for a selected range.
+- XLSX import/export through the SheetJS browser library (loaded from a public CDN); JSON workbook backup remains available.
+- Range copy/paste using keyboard shortcuts and browser clipboard access where permitted.
+- Formula library expanded with examples for product, absolute value, text functions, COUNTIF and SUMIF. The existing v19 formula evaluator still determines which formulas actually calculate; the extended examples are not all yet implemented in the calculation engine.
+
+## v20 compatibility notes
+- XLSX import currently imports worksheet cell values into the Ethan grid. It does not promise full fidelity for external workbook formulas, styles, charts, macros, validations or advanced Excel features.
+- XLSX import/export requires the SheetJS CDN to be reachable. CSV remains the dependable offline interchange option.
+- Conditional formatting, chart preview and filter UI are first-phase tools; they are not yet a full Excel parity implementation.
+- A live browser interaction pass is still required to verify the full workflow on desktop and mobile.
 Production app: https://office.ethandigitalacademy.org
 Repository: abayomipeteroyenuga-commits/Ethanoffice
 Branch: main
