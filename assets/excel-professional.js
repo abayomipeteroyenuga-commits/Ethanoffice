@@ -49,6 +49,7 @@ function bindGrid(){const g=$('#sheetGrid');if(!g||g.dataset.eoBound)return;g.da
 function paste(t){const b=book();if(!b)return;const a=pos(),rows=String(t).replace(/\\r/g,'').split('\\n').map(x=>x.split('\\t'));rows.forEach((row,ri)=>row.forEach((v,ci)=>{if(a.r+ri<60&&a.c+ci<20)b.grid[a.r+ri][a.c+ci]=v}));persist();window.drawGrid(b);toast('Range pasted')}
 window.ethanFormulaLibrary=()=>{const f=['=SUM(A1:A10)','=AVERAGE(B2:B20)','=COUNT(A1:A20)','=COUNTA(A1:A20)','=IF(B2>=50,"Pass","Fail")','=ROUND(C2*1.075,2)','=MIN(D2:D20)','=MAX(D2:D20)','=PRODUCT(A1:A5)','=ABS(B2)','=LEN(A2)','=LEFT(A2,3)','=RIGHT(A2,4)','=CONCAT(A2," ",B2)','=COUNTIF(C2:C20,">=50")','=SUMIF(A2:A20,"Sales",B2:B20)'];const html=f.map(x=>'<div class="item"><code>'+esc(x)+'</code><button class="btn sm" onclick="document.getElementById(\'formulaBar\').value='+JSON.stringify(x)+';applyFormula();closeModal()">Insert</button></div>').join('');window.modal('Ethan Excel Formula Library',html,window.closeModal);$('#modalSave').textContent='Close'};
 function install(){const b=book();if(b)ensure(b);inject();if(b)renderTabs();bindGrid()}
+const oldExcelTab=window.excelTab;window.excelTab=function(tab,btn){oldExcelTab?.(tab,btn);inject()};
 const oldDraw=window.drawGrid;window.drawGrid=function(b){oldDraw(b);install()};
 const oldOpen=window.openSheet;window.openSheet=function(id){oldOpen(id);install()};
 const oldSave=window.saveSheet;window.saveSheet=function(){oldSave();persist()};
