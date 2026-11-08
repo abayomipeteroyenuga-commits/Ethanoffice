@@ -34,5 +34,5 @@ function onKey(e){
 }
 document.addEventListener('keydown',onKey,true);
 document.addEventListener('click',e=>{const td=e.target?.closest?.('#sheetGrid td[data-r][data-c]');if(!td||!isOpen())return;const p={r:+td.dataset.r,c:+td.dataset.c};if(!e.shiftKey){start=p;finish=p}else{finish=p}},true);
-window.addEventListener('focus',()=>{if(!isOpen())return;const p=getPos();getCell(p.r,p.c)?.focus({preventScroll:true)},true);
+window.addEventListener('focus',()=>{if(!isOpen())return;const p=getPos();getCell(p.r,p.c)?.focus({preventScroll:true})},true);
 })();
