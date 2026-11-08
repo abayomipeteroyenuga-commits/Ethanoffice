@@ -12,6 +12,9 @@ Date: 2026-11-08
 - Range copy/paste using keyboard shortcuts and browser clipboard access where permitted.
 - Formula library expanded with examples for product, absolute value, text functions, COUNTIF and SUMIF. The existing v19 formula evaluator still determines which formulas actually calculate; the extended examples are not all yet implemented in the calculation engine.
 
+- Additional formula evaluator support: PRODUCT, ABS, LEN, LEFT, RIGHT, CONCAT, COUNTIF and SUMIF.
+- Row and column insertion/deletion, plus manual workbook restore points and local version history.
+
 ## v20 compatibility notes
 - XLSX import currently imports worksheet cell values into the Ethan grid. It does not promise full fidelity for external workbook formulas, styles, charts, macros, validations or advanced Excel features.
 - XLSX import/export requires the SheetJS CDN to be reachable. CSV remains the dependable offline interchange option.
