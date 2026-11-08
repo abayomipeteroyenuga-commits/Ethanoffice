@@ -156,3 +156,6 @@ body{overflow-x:hidden}
 .sheet td.xlHighlight{background:#fff2a8!important;font-weight:700}
 .ribbonTabs{overflow-x:auto;scrollbar-width:thin}.ribbonTabs button{white-space:nowrap}.wordTabs{overflow-x:auto;scrollbar-width:thin}.wordTabs button{white-space:nowrap}
 @media(max-width:900px){.ribbonBody,.wordRibbonPanel{overflow-x:auto;flex-wrap:nowrap}.ribbonGroup{min-width:max-content}}
+
+/* Ethan Excel v19: clear active/range selection and spreadsheet interaction feedback. */
+.sheet td.sel{position:relative;z-index:1;outline:2px solid #107c41;outline-offset:-2px;background:#e5f5eb!important;box-shadow:inset 0 0 0 1px #fff}.sheet td.rangeSelected{background:#eaf3ff!important;box-shadow:inset 0 0 0 1px #9bc4fa}.sheet td[contenteditable=true]:focus{outline:2px solid #107c41;outline-offset:-2px}.sheet td.validatedCell{background-image:linear-gradient(135deg,transparent 92%,#8ab8e8 92%)}.formulaStrip input{min-width:120px;font-family:Consolas,monospace}.excelTop #excelSaveState{font-weight:700}.sheetStatus{position:sticky;bottom:0;z-index:5}
