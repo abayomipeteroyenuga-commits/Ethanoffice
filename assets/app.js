@@ -482,8 +482,8 @@ const oldPresTab=window.presTab;window.presTab=function(tab,btn){if(tab==='anima
 window.setPresObjectAnimation=function(v){const p=state.presentations.find(x=>x.id===currentPres);if(!p)return;p.slides[currentSlide].animation=v;DB.save();toast(v==='none'?'Animation removed':v+' animation applied')};
 window.previewPresAnimation=function(){const el=document.getElementById('slideCanvas');if(!el)return;el.animate([{opacity:.15,transform:'translateY(14px)'},{opacity:1,transform:'translateY(0)'}],{duration:500,easing:'ease-out'})};
 // Version markers.
-const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v11';
-const ws=document.querySelector('#workspaceStatus span:nth-of-type(2)');if(ws&&ws.textContent.includes('Suite'))ws.textContent='Executive Suite v11';
+const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v22';
+const ws=document.querySelector('#workspaceStatus span:nth-of-type(2)');if(ws&&ws.textContent.includes('Suite'))ws.textContent='Executive Suite v22';
 renderFiles();
 })();
 
@@ -554,7 +554,7 @@ window.presHeaderFooter=function(){const p=state.presentations.find(x=>x.id===cu
 const oldDrawPresV7=window.drawPres;window.drawPres=function(){oldDrawPresV7();const p=state.presentations.find(x=>x.id===currentPres),c=$('#slideCanvas');if(!p||!c)return;ensurePresDesign(p);c.style.backgroundColor=p.design.background||'';c.style.aspectRatio=p.design.size==='4:3'?'4 / 3':p.design.size==='A4'?'210 / 297':'16 / 9';let f=c.querySelector('.presFooterMeta');if(!f){f=document.createElement('div');f.className='presFooterMeta';c.appendChild(f)}f.textContent=[p.design.showDate?new Date().toLocaleDateString():'',p.design.footer||'',p.design.showNumber?String(currentSlide+1):''].filter(Boolean).join('   •   ')};
 const oldPresTabV7=window.presTab;window.presTab=function(tab,btn){if(tab==='design'){btn?.parentElement?.querySelectorAll('button').forEach(x=>x.classList.remove('active'));btn?.classList.add('active');const b=$('#presRibbonBody');if(b)b.innerHTML='<div class=ribbonGroup><b>Themes</b><button onclick="setPresTheme(\'navy\')">Navy</button><button onclick="setPresTheme(\'light\')">Light</button><button onclick="setPresTheme(\'green\')">Green</button><button onclick="setPresTheme(\'purple\')">Purple</button><button onclick="setPresTheme(\'sunset\')">Sunset</button></div><div class=ribbonGroup><b>Customize</b><button onclick="presSlideSize()">Slide Size</button><button onclick="presBackground()">Format Background</button><button onclick="presHeaderFooter()">Header & Footer</button></div>';return}return oldPresTabV7(tab,btn)};
 
-const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v11';
+const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v22';
 DB.save();
 })();
 
@@ -696,7 +696,7 @@ try{DB.save();renderHome();renderFiles()}catch(e){console.error(e)}
   // Keep suite file lists synchronized when the tab becomes active again.
   document.addEventListener('visibilitychange',()=>{if(!document.hidden){try{renderHome();renderFiles()}catch(e){console.error(e)}}});
 
-  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v11';
+  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v22';
   if(state.settings)state.settings.version='11.0.0';
   try{DB.save()}catch(e){console.error(e)}
 })();
@@ -784,8 +784,8 @@ try{DB.save();renderHome();renderFiles()}catch(e){console.error(e)}
   if(window.applyWordPage) applyWordPage=window.applyWordPage;
   if(window.autoSaveWord) autoSaveWord=window.autoSaveWord;
 
-  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v11';
-  const statusVersion=document.querySelector('#workspaceStatus span:nth-of-type(2)');if(statusVersion&&/Suite v\d+/.test(statusVersion.textContent))statusVersion.textContent='Executive Suite v11';
+  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v22';
+  const statusVersion=document.querySelector('#workspaceStatus span:nth-of-type(2)');if(statusVersion&&/Suite v\d+/.test(statusVersion.textContent))statusVersion.textContent='Executive Suite v22';
   try{DB.save();renderHome();renderFiles()}catch(e){console.error('v11 final initialization',e)}
 })();
 
@@ -798,9 +798,9 @@ try{DB.save();renderHome();renderFiles()}catch(e){console.error(e)}
   state.settings.version=V16;
 
   // Ensure every visible version label agrees with the running suite version.
-  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v16';
+  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v22';
   const status=document.getElementById('workspaceStatus');
-  if(status){const spans=[...status.querySelectorAll('span')];const ver=spans.find(x=>/Suite v\d+/i.test(x.textContent||''));if(ver)ver.textContent='Executive Suite v16'}
+  if(status){const spans=[...status.querySelectorAll('span')];const ver=spans.find(x=>/Suite v\d+/i.test(x.textContent||''));if(ver)ver.textContent='Executive Suite v22'}
 
   // Restore backups through a v13-safe path. Older backups are migrated instead of downgrading runtime state.
   function restoreOfficeV13(input){
@@ -864,9 +864,9 @@ try{DB.save();renderHome();renderFiles()}catch(e){console.error(e)}
     document.body.removeAttribute('data-office-theme');
     DB.save();
   }catch(e){console.error('v16 migration',e)}
-  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v16';
+  const vp=document.querySelector('.versionPill');if(vp)vp.textContent='Executive Suite v22';
   const status=document.getElementById('workspaceStatus');
-  if(status){const spans=[...status.querySelectorAll('span')];const ver=spans.find(x=>/Suite v\d+/i.test(x.textContent||''));if(ver)ver.textContent='Executive Suite v16'}
+  if(status){const spans=[...status.querySelectorAll('span')];const ver=spans.find(x=>/Suite v\d+/i.test(x.textContent||''));if(ver)ver.textContent='Executive Suite v22'}
   try{renderHome();renderFiles()}catch(e){console.error('v16 refresh',e)}
 })();
 
@@ -1075,7 +1075,7 @@ window.handleCSV=function(e){let f=e.target.files?.[0];if(!f)return;let rd=new F
 let formula=$('#formulaBar');
 let open=window.openSheet;window.openSheet=function(id){open(id);let a=active();a.r=0;a.c=0;anchor={r:0,c:0};end=anchor;let s=sheet();if(s){ensure(s);drawGrid(s);excelTab('home',$('#page-excel .ribbonTabs button'));setTimeout(()=>{let a=active();a.r=0;a.c=0;let first=$('#sheetGrid td[data-r="0"][data-c="0"]');if(first)choose(first,false)},25)}};
 let close=window.closeSheet;window.closeSheet=function(){let s=sheet();if(s){$$('#sheetGrid td[contenteditable]').forEach(commit);DB.save()}close()};
-try{state.settings.version='19.0.0';DB.save();let v=$('.versionPill');if(v)v.textContent='Executive Suite v19'}catch(e){console.warn('Excel v19',e)}
+try{state.settings.version='22.0.0';DB.save();let v=$('.versionPill');if(v)v.textContent='Executive Suite v22'}catch(e){console.warn('Excel v19',e)}
 })();
 
 /* Expose the existing local workspace safely to the Excel extension. */
@@ -1083,4 +1083,4 @@ window.ethanGetState=function(){return state};
 window.ethanGetCurrentSheet=function(){return currentSheet};
 window.ethanSave=function(){DB.save()};
 /* Load Ethan Excel Professional v20 extension. */
-(function(){var s=document.createElement('script');s.src='assets/excel-professional.js?v=21';s.defer=true;document.body.appendChild(s)})();
+(function(){var s=document.createElement('script');s.src='assets/excel-professional.js?v=22';s.defer=true;document.body.appendChild(s)})();
