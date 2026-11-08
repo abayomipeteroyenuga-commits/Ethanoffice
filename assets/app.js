@@ -1083,4 +1083,4 @@ window.ethanGetState=function(){return state};
 window.ethanGetCurrentSheet=function(){return currentSheet};
 window.ethanSave=function(){DB.save()};
 /* Load Ethan Excel Professional v20 extension. */
-(function(){var s=document.createElement('script');s.src='assets/excel-professional.js?v=23';s.onload=function(){var k=document.createElement('script');k.src='assets/excel-keyboard.js?v=6';document.body.appendChild(k)};document.body.appendChild(s)})();
+(function(){var s=document.createElement('script');s.src='assets/excel-professional.js?v=23';s.onload=function(){var k=document.createElement('script');k.src='assets/excel-keyboard.js?v=7';document.body.appendChild(k)};document.body.appendChild(s)})();
