@@ -5,7 +5,7 @@ const $=s=>document.querySelector(s);
 const book=()=>window.ethanGetState?.().sheets.find(x=>x.id===window.ethanGetCurrentSheet());
 const pos=()=>window.getXlCell?window.getXlCell():{r:0,c:0};
 const cols='ABCDEFGHIJKLMNOPQRST';
-let start=null,end=null,dragging=false,copied='';
+let start=null,end=null,dragging=false,dragMoved=false,copied='';
 const clamp=(n,min,max)=>Math.max(min,Math.min(max,n));
 const cell=(r,c)=>$('#sheetGrid td[data-r="'+r+'"][data-c="'+c+'"]');
 const addr=(r,c)=>cols[c]+(r+1);
@@ -60,18 +60,18 @@ function bind(){
  g.dataset.keyboardRepair='1';
  g.addEventListener('pointerdown',e=>{
   const t=e.target.closest('td[data-r][data-c]');if(!t)return;
-  dragging=true;const p={r:+t.dataset.r,c:+t.dataset.c};start=p;end=p;
+  dragging=true;dragMoved=false;const p={r:+t.dataset.r,c:+t.dataset.c};start=p;end=p;
   const a=pos();a.r=p.r;a.c=p.c;paint();
  });
  g.addEventListener('pointerover',e=>{
   if(!dragging)return;const t=e.target.closest('td[data-r][data-c]');if(!t)return;
-  end={r:+t.dataset.r,c:+t.dataset.c};paint();
+  const next={r:+t.dataset.r,c:+t.dataset.c};if(!end||next.r!==end.r||next.c!==end.c)dragMoved=true;end=next;paint();
  });
  window.addEventListener('pointerup',()=>{dragging=false});
  g.addEventListener('click',e=>{
   const t=e.target.closest('td[data-r][data-c]');if(!t)return;
   const p={r:+t.dataset.r,c:+t.dataset.c};
-  if(e.shiftKey){end=p}else if(!dragging){start=p;end=p}
+  if(e.shiftKey){end=p}else if(!dragMoved){start=p;end=p}dragMoved=false;
   const a=pos();a.r=p.r;a.c=p.c;setTimeout(paint,0);
  });
  g.addEventListener('keydown',e=>{
