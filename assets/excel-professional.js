@@ -49,6 +49,41 @@ function bindGrid(){const g=$('#sheetGrid');if(!g||g.dataset.eoBound)return;g.da
 function paste(t){const b=book();if(!b)return;const a=pos(),rows=String(t).replace(/\\r/g,'').split('\\n').map(x=>x.split('\\t'));rows.forEach((row,ri)=>row.forEach((v,ci)=>{if(a.r+ri<60&&a.c+ci<20)b.grid[a.r+ri][a.c+ci]=v}));persist();window.drawGrid(b);toast('Range pasted')}
 window.ethanFormulaLibrary=()=>{const f=['=SUM(A1:A10)','=AVERAGE(B2:B20)','=COUNT(A1:A20)','=COUNTA(A1:A20)','=IF(B2>=50,"Pass","Fail")','=ROUND(C2*1.075,2)','=MIN(D2:D20)','=MAX(D2:D20)','=PRODUCT(A1:A5)','=ABS(B2)','=LEN(A2)','=LEFT(A2,3)','=RIGHT(A2,4)','=CONCAT(A2," ",B2)','=COUNTIF(C2:C20,">=50")','=SUMIF(A2:A20,"Sales",B2:B20)'];const html=f.map(x=>'<div class="item"><code>'+esc(x)+'</code><button class="btn sm" onclick="document.getElementById(\'formulaBar\').value='+JSON.stringify(x)+';applyFormula();closeModal()">Insert</button></div>').join('');window.modal('Ethan Excel Formula Library',html,window.closeModal);$('#modalSave').textContent='Close'};
 function install(){const b=book();if(b)ensure(b);inject();if(b)renderTabs();bindGrid()}
+
+/* v20.1: additional function calculations, structural edits and local version snapshots. */
+(function(){
+ const $=s=>document.querySelector(s);
+ const orig=window.displayCell;
+ const esc=s=>String(s??'').replace(/^["']|["']$/g,'');
+ function split(s){let a=[],v='',d=0,q='';for(let i=0;i<s.length;i++){let c=s[i];if(q){v+=c;if(c===q&&s[i-1]!=='\\')q='';continue}if(c==='"'||c==="'"){q=c;v+=c}else if(c==='('){d++;v+=c}else if(c===')'){d--;v+=c}else if(c===','&&!d){a.push(v.trim());v=''}else v+=c}if(v.trim())a.push(v.trim());return a}
+ function refs(s){const m=/^([A-T])(\d+):([A-T])(\d+)$/i.exec(s.trim());if(!m)return[];let out=[],c1=m[1].toUpperCase().charCodeAt(0)-65,c2=m[3].toUpperCase().charCodeAt(0)-65,r1=+m[2]-1,r2=+m[4]-1;for(let r=Math.min(r1,r2);r<=Math.max(r1,r2);r++)for(let c=Math.min(c1,c2);c<=Math.max(c1,c2);c++)out.push({r,c});return out}
+ function val(v){if(typeof v==='string'&&v[0]==='=')return Number(orig(v,window.ethanGetState().sheets.find(x=>x.id===window.ethanGetCurrentSheet())?.grid)||0);return v}
+ window.displayCell=function(raw,g){
+  if(typeof raw!=='string'||raw[0]!=='=')return orig(raw,g);
+  const f=raw.slice(1).trim(),m=/^(PRODUCT|ABS|LEN|LEFT|RIGHT|CONCAT|COUNTIF|SUMIF)\((.*)\)$/i.exec(f);
+  if(!m)return orig(raw,g);
+  const fn=m[1].toUpperCase(),a=split(m[2]),getRange=x=>refs(x).map(p=>g?.[p.r]?.[p.c]??'');
+  try{
+   if(fn==='PRODUCT'){const n=getRange(a[0]).map(Number).filter(Number.isFinite);return n.reduce((x,y)=>x*y,1)}
+   if(fn==='ABS')return Math.abs(Number(a[0].replace(/[A-T]\d+/gi,x=>g?.[+x.match(/\d+/)[0]-1]?.[x.charCodeAt(0)-65]??0)));
+   if(fn==='LEN')return esc(a[0]).length;
+   if(fn==='LEFT'||fn==='RIGHT'){const v=esc(a[0]).replace(/^([A-T]\d+)$/i,(_,x)=>String(g?.[+x.match(/\d+/)[0]-1]?.[x.charCodeAt(0)-65]??''));const n=Math.max(0,Number(a[1]||1));return fn==='LEFT'?v.slice(0,n):v.slice(-n)}
+   if(fn==='CONCAT')return a.map(x=>{const z=/^([A-T])(\d+)$/i.exec(x);return z?String(g?.[+z[2]-1]?.[z[1].toUpperCase().charCodeAt(0)-65]??''):esc(x)}).join('');
+   if(fn==='COUNTIF'||fn==='SUMIF'){const r=getRange(a[0]),crit=esc(a[1]),sum=fn==='SUMIF'?getRange(a[2]):r;const match=v=>{const q=/^(>=|<=|<>|>|<|=)(.*)$/.exec(crit);if(!q)return String(v).toLowerCase()===crit.toLowerCase();const n=Number(v),t=Number(q[2]);return q[1]==='>'?n>t:q[1]==='<'?n<t:q[1]==='>='?n>=t:q[1]==='<='?n<=t:q[1]==='<>'?String(v)!==q[2]:String(v)===q[2]};const yes=r.map(match);return fn==='COUNTIF'?yes.filter(Boolean).length:sum.reduce((n,v,i)=>n+(yes[i]?Number(v)||0:0),0)}
+  }catch(e){return '#ERR!'}return orig(raw,g)
+ };
+ function b(){return window.ethanGetState().sheets.find(x=>x.id===window.ethanGetCurrentSheet())}
+ function persist(){window.ethanSave()}
+ window.ethanInsertRow=()=>{const x=b();if(!x)return;const r=window.getXlCell().r;x.grid.splice(r,0,Array(20).fill(''));x.grid.length=60;persist();window.drawGrid(x)};
+ window.ethanDeleteRow=()=>{const x=b();if(!x)return;const r=window.getXlCell().r;if(!confirm('Delete row '+(r+1)+'?'))return;x.grid.splice(r,1);x.grid.push(Array(20).fill(''));persist();window.drawGrid(x)};
+ window.ethanInsertColumn=()=>{const x=b();if(!x)return;const c=window.getXlCell().c;x.grid.forEach(row=>{row.splice(c,0,'');row.length=20});persist();window.drawGrid(x)};
+ window.ethanDeleteColumn=()=>{const x=b();if(!x)return;const c=window.getXlCell().c;if(!confirm('Delete column '+String.fromCharCode(65+c)+'?'))return;x.grid.forEach(row=>{row.splice(c,1);row.push('')});persist();window.drawGrid(x)};
+ window.ethanSaveVersion=()=>{const x=b();if(!x)return;x.versions=x.versions||[];x.versions.unshift({time:Date.now(),grid:JSON.parse(JSON.stringify(x.grid)),worksheets:JSON.parse(JSON.stringify(x.worksheets||[]))});x.versions=x.versions.slice(0,10);persist();toast('Workbook version saved')};
+ window.ethanVersionHistory=()=>{const x=b();if(!x)return;const vs=x.versions||[];const html=vs.length?vs.map((v,i)=>'<div class="item"><span class="grow">'+new Date(v.time).toLocaleString()+'</span><button class="btn sm" onclick="ethanRestoreVersion('+i+')">Restore</button></div>').join(''):'<p>No saved versions yet. Use Save Version to create a restore point.</p>';window.modal('Workbook version history',html,window.closeModal);$('#modalSave').textContent='Close'};
+ window.ethanRestoreVersion=i=>{const x=b(),v=x?.versions?.[i];if(!v||!confirm('Restore this saved workbook version?'))return;x.grid=JSON.parse(JSON.stringify(v.grid));if(v.worksheets?.length)x.worksheets=JSON.parse(JSON.stringify(v.worksheets));persist();window.drawGrid(x);window.closeModal();toast('Workbook restored')};
+ const old=window.excelTab;window.excelTab=function(tab,btn){old?.(tab,btn);const host=$('#excelRibbonBody');if(host&&!$('#eoStructureTools'))host.insertAdjacentHTML('beforeend','<div id="eoStructureTools" class="eo-pro-group"><b>Rows & columns</b><button onclick="ethanInsertRow()">Insert row</button><button onclick="ethanDeleteRow()">Delete row</button><button onclick="ethanInsertColumn()">Insert column</button><button onclick="ethanDeleteColumn()">Delete column</button><button onclick="ethanSaveVersion()">Save version</button><button onclick="ethanVersionHistory()">Version history</button></div>')};
+})();
+
 const oldExcelTab=window.excelTab;window.excelTab=function(tab,btn){oldExcelTab?.(tab,btn);inject()};
 const oldDraw=window.drawGrid;window.drawGrid=function(b){oldDraw(b);install()};
 const oldOpen=window.openSheet;window.openSheet=function(id){oldOpen(id);install()};
