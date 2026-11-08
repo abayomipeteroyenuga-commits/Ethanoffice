@@ -90,5 +90,5 @@ const oldOpen=window.openSheet;window.openSheet=function(id){oldOpen(id);install
 const oldSave=window.saveSheet;window.saveSheet=function(){oldSave();persist()};
 document.addEventListener('DOMContentLoaded',install);setTimeout(install,0);
 const timer=setInterval(()=>{const b=book();if(b&&!$('#sheetWorkspace')?.classList.contains('hidden'))persist()},20000);
-try{const v=$('.versionPill');if(v)v.textContent='Executive Suite v21'}catch{}
+try{const v=$('.versionPill');if(v)v.textContent='Executive Suite v22'}catch{}
 })();
