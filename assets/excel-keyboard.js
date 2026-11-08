@@ -32,10 +32,10 @@ function paint(){
 function commit(el){
  const b=book();if(!b||!el)return;
  const r=+el.dataset.r,c=+el.dataset.c;
- // Only write back edited text. A formula cell's displayed result must not replace its formula on blur.
- if(Object.prototype.hasOwnProperty.call(el.dataset,'raw')){
-  b.grid[r][c]=String(el.dataset.raw??'').replace(/\r/g,'').trim();
-  delete el.dataset.raw;window.ethanSave?.();
+ // The core grid's blur handler commits the cell. Preserve the underlying formula
+ // in data-raw before focus moves, otherwise it mistakes the displayed result for input.
+ if(!Object.prototype.hasOwnProperty.call(el.dataset,'raw')&&String(b.grid[r]?.[c]??'').startsWith('=')){
+  el.dataset.raw=String(b.grid[r][c]);
  }
 }
 function setSelection(r,c,extend){
