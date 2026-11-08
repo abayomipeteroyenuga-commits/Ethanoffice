@@ -1077,3 +1077,6 @@ let open=window.openSheet;window.openSheet=function(id){open(id);let a=active();
 let close=window.closeSheet;window.closeSheet=function(){let s=sheet();if(s){$$('#sheetGrid td[contenteditable]').forEach(commit);DB.save()}close()};
 try{state.settings.version='19.0.0';DB.save();let v=$('.versionPill');if(v)v.textContent='Executive Suite v19'}catch(e){console.warn('Excel v19',e)}
 })();
+
+/* Load Ethan Excel Professional v20 extension. */
+(function(){var s=document.createElement('script');s.src='assets/excel-professional.js';s.defer=true;document.body.appendChild(s)})();
