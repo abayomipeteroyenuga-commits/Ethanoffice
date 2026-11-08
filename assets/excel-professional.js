@@ -2,7 +2,7 @@
 (function(){
 'use strict';
 const $=s=>document.querySelector(s), $$=s=>Array.from(document.querySelectorAll(s));
-const book=()=>window.state&&window.state.sheets.find(x=>x.id===window.currentSheet);
+const book=()=>window.ethanGetState&&window.ethanGetState().sheets.find(x=>x.id===window.ethanGetCurrentSheet());
 const letters='ABCDEFGHIJKLMNOPQRST'.split('');
 let rangeStart=null,rangeEnd=null;
 const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -13,7 +13,7 @@ function ensure(b){
  if(!Array.isArray(b.worksheets)||!b.worksheets.length){b.worksheets=[{id:'ws-'+Date.now(),name:'Sheet1',grid:b.grid||[],styles:b.styles||{},formats:{},rules:[]}];b.activeWorksheetId=b.worksheets[0].id}
  const w=b.worksheets.find(x=>x.id===b.activeWorksheetId)||b.worksheets[0];b.activeWorksheetId=w.id;b.grid=w.grid||b.grid;b.styles=w.styles||{};b.formats=w.formats||{};b.rules=w.rules||[];
 }
-function persist(){const b=book();if(!b)return;ensure(b);const w=b.worksheets.find(x=>x.id===b.activeWorksheetId);Object.assign(w,{grid:b.grid,styles:b.styles,formats:b.formats,rules:b.rules});b.updated=Date.now();window.DB.save()}
+function persist(){const b=book();if(!b)return;ensure(b);const w=b.worksheets.find(x=>x.id===b.activeWorksheetId);Object.assign(w,{grid:b.grid,styles:b.styles,formats:b.formats,rules:b.rules});b.updated=Date.now();window.ethanSave()}
 function renderTabs(){
  const b=book(),host=$('#ethanWorksheetTabs');if(!b||!host)return;ensure(b);
  host.innerHTML=b.worksheets.map(w=>'<button class="eo-tab '+(w.id===b.activeWorksheetId?'active':'')+'" onclick="ethanSwitchSheet(\''+w.id+'\')">'+esc(w.name)+'</button>').join('')+'<button class="eo-tab-add" onclick="ethanAddSheet()">＋</button>';
