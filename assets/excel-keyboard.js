@@ -1,17 +1,13 @@
-/* Ethan Office Excel keyboard navigation v10 — authoritative capture-phase navigation */
+/* Ethan Office Excel keyboard navigation v11 — authoritative capture-phase navigation */
 (function () {
   'use strict';
-  if (window.__ethanExcelKeyboardV10) return;
-  window.__ethanExcelKeyboardV10 = true;
+  if (window.__ethanExcelKeyboardV11) return;
+  window.__ethanExcelKeyboardV11 = true;
 
   const $ = (s) => document.querySelector(s);
   const grid = () => $('#sheetGrid');
   const activePage = () => document.querySelector('.page.active');
-  const isExcelOpen = () => {
-    const p = activePage();
-    return !!p && p.id === 'page-excel' && !!grid() &&
-      !$('#sheetWorkspace')?.classList.contains('hidden');
-  };
+  const isExcelOpen = () => { const w = $('#sheetWorkspace'); return !!grid() && !!w && !w.classList.contains('hidden') && w.offsetParent !== null; };
   const getCell = (r, c) => grid()?.querySelector('td[data-r="' + r + '"][data-c="' + c + '"]');
   const getPos = () => {
     const p = window.getXlCell?.();
@@ -21,11 +17,6 @@
   let edge = null;
   let clipboard = '';
 
-  function book() {
-    const state = window.ethanGetState?.();
-    const id = window.ethanGetCurrentSheet?.();
-    return state?.sheets?.find((s) => s.id === id);
-  }
   function range() {
     const p = getPos(), a = anchor || p, b = edge || p;
     return {
@@ -46,9 +37,8 @@
     }
   }
   function activate(r, c, extend) {
-    const s = book();
-    if (!s || !Array.isArray(s.grid)) return;
-    const rows = s.grid.length || 60, cols = s.grid[0]?.length || 20;
+    const g = grid(); if (!g) return;
+    const rows = g.querySelectorAll('tbody tr').length || 60, cols = g.querySelectorAll('tbody tr:first-child td[data-c]').length || 20;
     r = Math.max(0, Math.min(rows - 1, r));
     c = Math.max(0, Math.min(cols - 1, c));
     const p = getPos();
@@ -63,7 +53,7 @@
     const live = getPos(); live.r = r; live.c = c;
     gScroll(td);
     $('#cellName') && ($('#cellName').textContent = 'ABCDEFGHIJKLMNOPQRST'[c] + (r + 1));
-    $('#formulaBar') && ($('#formulaBar').value = s.grid[r]?.[c] ?? '');
+    $('#formulaBar') && ($('#formulaBar').value = td.innerText ?? '');
     $('#excelStatus') && ($('#excelStatus').textContent = 'ABCDEFGHIJKLMNOPQRST'[c] + (r + 1) + ' • Ready');
     paintRange();
   }
@@ -81,39 +71,26 @@
     else if (a.right > b.right) scroller.scrollLeft += a.right - b.right;
   }
   function values() {
-    const s = book(), b = range(), out = [];
-    for (let r = b.top; r <= b.bottom; r++) {
-      const row = [];
-      for (let c = b.left; c <= b.right; c++) row.push(String(s?.grid?.[r]?.[c] ?? ''));
-      out.push(row);
-    }
+    const b = range(), out = [];
+    for (let r=b.top;r<=b.bottom;r++){const row=[];for(let c=b.left;c<=b.right;c++)row.push(getCell(r,c)?.innerText??'');out.push(row)}
     return out;
   }
   function copy(cut) {
-    const s = book();
-    if (!s) return;
     const b = range(), rows = values();
     clipboard = rows.map((r) => r.join('\t')).join('\n');
     try { navigator.clipboard?.writeText(clipboard).catch(() => {}); } catch (_) {}
     if (cut) {
-      for (let r = b.top; r <= b.bottom; r++)
-        for (let c = b.left; c <= b.right; c++) s.grid[r][c] = '';
-      window.ethanSave?.();
-      window.drawGrid?.(s);
-      activate(b.top, b.left, false);
+      for(let r=b.top;r<=b.bottom;r++)for(let c=b.left;c<=b.right;c++){const t=getCell(r,c);if(t)t.innerText=''}
+      activate(b.top,b.left,false);
     }
   }
   function paste(text) {
-    const s = book();
-    if (!s) return;
     const p = getPos();
     const rows = String(text ?? '').replace(/\r/g, '').replace(/\n$/, '').split('\n').map((x) => x.split('\t'));
     rows.forEach((row, ri) => row.forEach((v, ci) => {
-      if (s.grid[p.r + ri] && p.c + ci < (s.grid[p.r + ri].length || 20)) s.grid[p.r + ri][p.c + ci] = v;
+      const t=getCell(p.r+ri,p.c+ci);if(t)t.innerText=v;
     }));
-    window.ethanSave?.();
-    window.drawGrid?.(s);
-    activate(p.r, p.c, false);
+    activate(p.r,p.c,false);
   }
   document.addEventListener('focusin', (e) => {
     const td = e.target?.closest?.('#sheetGrid td[data-r][data-c]');
@@ -150,12 +127,7 @@
     }
     if (k === 'Delete' || k === 'Backspace') {
       stop();
-      const s = book(), b = range();
-      if (s) {
-        for (let y = b.top; y <= b.bottom; y++)
-          for (let x = b.left; x <= b.right; x++) s.grid[y][x] = '';
-        window.ethanSave?.(); window.drawGrid?.(s); activate(r, c, false);
-      }
+      const b=range();for(let y=b.top;y<=b.bottom;y++)for(let x=b.left;x<=b.right;x++){const t=getCell(y,x);if(t)t.innerText=''}activate(r,c,false);
       return;
     }
     if (mod && k.toLowerCase() === 'a') {
